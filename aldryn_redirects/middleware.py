@@ -8,8 +8,10 @@ from .models import Redirect
 class RedirectFallbackMiddleware(object):
 
     def process_request(self, request):
+        query_dict = request.GET
         path = request.path_info
         path_with_queries = request.get_full_path()
+
         queries = (
             Q(old_path__iexact=path)
             | Q(old_path__iexact=path_with_queries)
@@ -32,4 +34,6 @@ class RedirectFallbackMiddleware(object):
 
         if r.new_path == '':
             return http.HttpResponseGone()
-        return http.HttpResponsePermanentRedirect(r.new_path)
+        if len(query_strs) == 0:
+            return http.HttpResponsePermanentRedirect(r.new_path)
+        return http.HttpResponsePermanentRedirect(r.new_path + "?%s" % query_dict.urlencode())
