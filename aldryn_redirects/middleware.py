@@ -34,6 +34,6 @@ class RedirectFallbackMiddleware(object):
 
         if r.new_path == '':
             return http.HttpResponseGone()
-        if len(query_strs) == 0:
+        if query_dict is None or len(query_dict) == 0:
             return http.HttpResponsePermanentRedirect(r.new_path)
         return http.HttpResponsePermanentRedirect(r.new_path + "?%s" % query_dict.urlencode())
